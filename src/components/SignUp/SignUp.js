@@ -28,7 +28,7 @@ class SignUp extends Component {
   // update the state when an input changes
   handleChange = event => {
     // event.target is the Form.Control (input) that caused the change event
-    // set the state with the key of 'name' to the Form.Control's new value
+    // set the state with the key of `name` to the Form.Control's new value
     this.setState({
       [event.target.name]: event.target.value
     })
@@ -43,18 +43,18 @@ class SignUp extends Component {
 
   // make a signUp request whenever the form is submitted
   onSignUp = event => {
-    // don't refresh the page
+    // dont refresh the page
     event.preventDefault()
 
-    // extract the props, msgAlert and setUser were passed down.
-    // history is a route prop the comes from withRouter
+    // extract the props. msgAlert and setUser were passed down.
+    // history is a route prop that comes from withRouter
     const { msgAlert, history, setUser } = this.props
 
     // make a signUp axios request. Pass this.state, so it has the email, password, and passwordConfirmation
     signUp(this.state)
       // makes a signIn request (to automatically sign us in after signing up)
       .then(() => signIn(this.state))
-      // set thge user state in App.js to the user we got from signing in
+      // set the user state in App.js to the user we got from signing in
       .then(res => setUser(res.data.user))
       // call msgAlert to tell the user that they were able to sign up successfully
       .then(() => msgAlert({
@@ -71,7 +71,7 @@ class SignUp extends Component {
         this.setState({ email: '', password: '', passwordConfirmation: '' })
         // show an error message
         msgAlert({
-          // error.message is a specific message from the error object
+          // error.message is the specific message from the error object
           heading: 'Sign Up Failed with error: ' + error.message,
           message: messages.signUpFailure,
           // this will be the red danger color from bootstrap
@@ -95,7 +95,7 @@ class SignUp extends Component {
         <div className="col-sm-10 col-md-8 mx-auto mt-5">
           <h3>Sign Up</h3>
           {/* Add a bootstrap form, similar to a normal form but prettier
-            When the form is submitted run the  */}
+              When the form is submitted run `this.onSignUp` */}
           <Form onSubmit={this.onSignUp}>
             {/* A Form.Group wraps a Form.Control (input), label, and optional help text.
                 The controlId is used for accessibility and should match the Form.Control's
@@ -156,5 +156,5 @@ class SignUp extends Component {
   }
 }
 
-// wrap signUp with router, so we have access to the history prop
+// wrap SignUp with router, so we have access to the history prop
 export default withRouter(SignUp)
