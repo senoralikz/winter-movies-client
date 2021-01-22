@@ -1,4 +1,4 @@
-// Import React (since our JSX is converted tp React.createElement calls)
+// Import React (since our JSX is converted to React.createElement calls)
 import React, { Component, Fragment } from 'react'
 import { Route } from 'react-router-dom'
 
@@ -19,11 +19,12 @@ import ChangePassword from './components/ChangePassword/ChangePassword'
 import MovieIndex from './components/MovieIndex/MovieIndex'
 import MovieCreate from './components/MovieCreate/MovieCreate'
 import MovieShow from './components/MovieShow/MovieShow'
+import MovieUpdate from './components/MovieUpdate/MovieUpdate'
 
 class App extends Component {
-  // Add a constructor to initialize satte for our App
-  // Best practice: Accepts props and cals super with props so that
-  // this.props is set in the constructor
+  // Add a constructor to initialize state for our App
+  // Best practice: Accepts props and calls super with props, so that
+  // this.props is set in the constrcutor
   constructor (props) {
     super(props)
 
@@ -43,11 +44,11 @@ class App extends Component {
   // reset the user state back to null (signing out our user)
   clearUser = () => this.setState({ user: null })
 
-  //  the deleteAlert function removes the msgAlert with the given id
+  // the deleteAlert function removes the msgAlert with the given id
   deleteAlert = (id) => {
-    // Update the msgAlert state
+    // Update the msgAlerts state
     this.setState((state) => {
-      // set the msgAlert state, to be all of the msgAlert currently in state
+      // set the msgAlerts state, to be all of the msgAlerts currently in state
       // but without any msgAlert whose id matches the id we passed in a parameter
       // We filter for any message whose id is not the id we are trying to delete
       return { msgAlerts: state.msgAlerts.filter(msg => msg.id !== id) }
@@ -56,36 +57,36 @@ class App extends Component {
 
   // msgAlert will show a new message alert
   // it accepts a heading for the alert, the alert's body (message), and the
-  // bootstrap variant to style the alert (primary, secondary, danger, info, etc ...)
+  // bootstrap variant to style the alert (primary, secondary, danger, info, etc...)
   msgAlert = ({ heading, message, variant }) => {
     // Create a unique id for this message
     const id = uuid()
 
-    // update the msgAlert state
+    // Update the msgAlerts state
     this.setState((state) => {
-      // set the msgAlert state to be a new array ([])
-      // with all of the msgAlert from the current state (...state.msgAlert
-      // and a new message alert object using the heading, message, variant, and id provided)
+      // set the msgAlerts state to be a new array ([])
+      // with all of the msgAlerts from the current state (...state.msgAlerts)
+      // and a new message alert object using the heading, message, variant, and id provided
       // ({ heading, message, variant, id })
       return { msgAlerts: [...state.msgAlerts, { heading, message, variant, id }] }
     })
   }
 
   render () {
-    // destructure (extract) the msgAlert and user state
+    // destructure (extract) the msgAlerts and user state
     const { msgAlerts, user } = this.state
 
     return (
       <Fragment>
         {/* This header is the top navigation bar with our links
-            We pass the Header the user so it can display the user's email.
-            Also, so we can display the correct links */}
+            We pass the Header the user, so it can display the user's email.
+            Also, so we can display the correct links. */}
         <Header user={user} />
         {/* Take each message alert and map it into an AutoDismissAlert element */}
         {msgAlerts.map(msgAlert => (
           // An AutoDismissAlert shows a message (alert) and then automatically disappears
           <AutoDismissAlert
-            /* React uses the key to identify the element that it is inserted,
+            /* React uses the key to identify the element when it is inserted,
               updated, or removed */
             key={msgAlert.id}
 
@@ -94,27 +95,27 @@ class App extends Component {
             variant={msgAlert.variant}
             message={msgAlert.message}
 
-            /* The msgAlert needs the msgAlert's id and deleteAlert funcitons to
-            remove the msgAlert after 5 seconds */
+            /* The msgAlert needs the msgAlert's id and deleteAlert functions to
+               remove the msgAlert after 5 seconds */
             id={msgAlert.id}
             deleteAlert={this.deleteAlert}
           />
         ))}
         <main className="container">
-          {/* Use a normal route component so we can see signUp whenever we aren't logged in */}
+          {/* Use a normal Route component so we can see SignUp whenever we aren't logged in */}
           <Route path='/sign-up' render={() => (
-            // Pass the signUp component the `msgAlert` so it can tell us if we
+            // Pass the SignUp component the `msgAlert` so it can tell us if we
             // signed up successfully or not.
             // We also pass the setUser function so we can be automatically signed in
             <SignUp msgAlert={this.msgAlert} setUser={this.setUser} />
           )} />
-          {/* Same as SignUp, but the path changes to signin and the component changes to sign in */}
+          {/* Same as SignUp, but the path changes to /sign-in and the component changes to SignIn */}
           <Route path='/sign-in' render={() => (
             <SignIn msgAlert={this.msgAlert} setUser={this.setUser} />
           )} />
           {/* An AuthenticatedRoute is used the same way as a normal route
             except it has a `user` prop we must pass it. The AuthenticatedRoute
-            will show if the user is not null. If the user is null it will redirect
+            will show if the user is not null. If the user is null, it will redirect
             to the home page */}
           <AuthenticatedRoute user={user} path='/sign-out' render={() => (
             // SignOut needs a msgAlert to notify us when we sign out
@@ -139,8 +140,13 @@ class App extends Component {
           )} />
 
           {/* Get a single movie | show */}
-          <AuthenticatedRoute user={user} path='/movies/:id' render={() => (
+          <AuthenticatedRoute user={user} exact path='/movies/:id' render={() => (
             <MovieShow msgAlert={this.msgAlert} user={user} />
+          )} />
+
+          {/* Update a single movie */}
+          <AuthenticatedRoute user={user} path='/movies/:id/edit' render={() => (
+            <MovieUpdate msgAlert={this.msgAlert} user={user} />
           )} />
         </main>
       </Fragment>

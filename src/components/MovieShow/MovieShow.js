@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 // import withRouter so we have access to the match route prop
-import { withRouter } from 'react-router-dom'
-import { movieShow } from '../../api/movies'
+import { withRouter, Redirect, Link } from 'react-router-dom'
+import { movieShow, movieDelete } from '../../api/movies'
 
 class MovieShow extends Component {
   constructor (props) {
@@ -10,7 +10,8 @@ class MovieShow extends Component {
 
     // initially our movie state will be null, until it is fetched from the api
     this.state = {
-      movie: null
+      movie: null,
+      deleted: false
     }
   }
 
@@ -35,8 +36,29 @@ class MovieShow extends Component {
       })
   }
 
+  handleDelete = event => {
+    const { user, msgAlert, match } = this.props
+
+    // make a delete axios request
+    movieDelete(match.params.id, user)
+      // set the deleted variable to true, to redirect to the movies page in render
+      .then(() => this.setState({ deleted: true }))
+      .then(() => msgAlert({
+        heading: 'Deleted Movie Successfully!',
+        message: 'Movie deleted!',
+        variant: 'success'
+      }))
+      .catch(error => {
+        msgAlert({
+          heading: 'Deleting Movie Failed',
+          message: 'Failed with error: ' + error.message,
+          variant: 'danger'
+        })
+      })
+  }
+
   render () {
-    const { movie } = this.state
+    const { movie, deleted } = this.state
 
     // if we don't have a movie yet
     if (!movie) {
@@ -48,12 +70,20 @@ class MovieShow extends Component {
       )
     }
 
+    // if the movie is deleted
+    if (deleted) {
+      // redirect to the movies index page
+      return <Redirect to="/movies" />
+    }
+
     return (
       <div>
         <h3>{movie.title}</h3>
         <h4>Director: {movie.director}</h4>
-        <button>Delete Movie</button>
-        <button>Update Movie</button>
+        <button onClick={this.handleDelete}>Delete Movie</button>
+        <button>
+          <Link to={`/movies/${movie._id}/edit`}>Update Movie</Link>
+        </button>
       </div>
     )
   }
