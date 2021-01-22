@@ -16,6 +16,9 @@ import SignUp from './components/SignUp/SignUp'
 import SignIn from './components/SignIn/SignIn'
 import SignOut from './components/SignOut/SignOut'
 import ChangePassword from './components/ChangePassword/ChangePassword'
+import MovieIndex from './components/MovieIndex/MovieIndex'
+import MovieCreate from './components/MovieCreate/MovieCreate'
+import MovieShow from './components/MovieShow/MovieShow'
 
 class App extends Component {
   // Add a constructor to initialize satte for our App
@@ -74,7 +77,9 @@ class App extends Component {
 
     return (
       <Fragment>
-        {/* This header is the top navigation bar with our links */}
+        {/* This header is the top navigation bar with our links
+            We pass the Header the user so it can display the user's email.
+            Also, so we can display the correct links */}
         <Header user={user} />
         {/* Take each message alert and map it into an AutoDismissAlert element */}
         {msgAlerts.map(msgAlert => (
@@ -103,6 +108,7 @@ class App extends Component {
             // We also pass the setUser function so we can be automatically signed in
             <SignUp msgAlert={this.msgAlert} setUser={this.setUser} />
           )} />
+          {/* Same as SignUp, but the path changes to signin and the component changes to sign in */}
           <Route path='/sign-in' render={() => (
             <SignIn msgAlert={this.msgAlert} setUser={this.setUser} />
           )} />
@@ -111,10 +117,30 @@ class App extends Component {
             will show if the user is not null. If the user is null it will redirect
             to the home page */}
           <AuthenticatedRoute user={user} path='/sign-out' render={() => (
+            // SignOut needs a msgAlert to notify us when we sign out
+            // it wants a clearUser prop, to reset the user after signing out
+            // it wants a user prop, so it can use the user's token to make an authenticated request
             <SignOut msgAlert={this.msgAlert} clearUser={this.clearUser} user={user} />
           )} />
           <AuthenticatedRoute user={user} path='/change-password' render={() => (
+            // Similar to SignOut, but the path is /change-password, the component is ChangePassword,
+            // and ChangePassword does not need the clearUser prop
             <ChangePassword msgAlert={this.msgAlert} user={user} />
+          )} />
+
+          {/* Get all movies | index */}
+          <AuthenticatedRoute user={user} exact path='/movies' render={() => (
+            <MovieIndex msgAlert={this.msgAlert} user={user} />
+          )} />
+
+          {/* Create a movie */}
+          <AuthenticatedRoute user={user} path='/create-movie' render={() => (
+            <MovieCreate msgAlert={this.msgAlert} user={user} />
+          )} />
+
+          {/* Get a single movie | show */}
+          <AuthenticatedRoute user={user} path='/movies/:id' render={() => (
+            <MovieShow msgAlert={this.msgAlert} user={user} />
           )} />
         </main>
       </Fragment>

@@ -28,6 +28,7 @@ export const signIn = credentials => {
     url: apiUrl + '/sign-in',
     method: 'POST',
     data: {
+      // like signUp but no passwordConfirmation
       credentials: {
         email: credentials.email,
         password: credentials.password
@@ -36,24 +37,32 @@ export const signIn = credentials => {
   })
 }
 
+// the signOut axios request needs a user
 export const signOut = user => {
   return axios({
+    // this sign out request has the same url and method from the jquery-ajax-token-auth lesson
     url: apiUrl + '/sign-out',
     method: 'DELETE',
+    // Add an authorization header
     headers: {
+      // we need the user, so we have access to their token
       'Authorization': `Token token=${user.token}`
     }
   })
 }
 
+// accept the old and new password and the user (for their token)
 export const changePassword = (passwords, user) => {
   return axios({
+    // the same url & method from the jquery-ajax-token-auth lesson
     url: apiUrl + '/change-password',
     method: 'PATCH',
+    // Add an authorization header using the user's token, like we did in signOut
     headers: {
       'Authorization': `Token token=${user.token}`
     },
     data: {
+      // send the passwords along in our change password request
       passwords: {
         old: passwords.oldPassword,
         new: passwords.newPassword
